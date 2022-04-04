@@ -4,7 +4,10 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<style>
 		.score {
-		
+			font-size: 70px;
+			text-align: center;
+			margin-bottom: 10px;
+			font-weight: bold;
 		}
 	
 		.divMap {
@@ -21,6 +24,8 @@
 			overflow: hidden;
 			width: 75px;
 			height: 75px;
+			font-size: 35px;
+			font-weight: bold;
 		}
 
 		.bigImg {
@@ -28,20 +33,253 @@
 			width: 150px;
 			height: 150px;
 		}
+		
+		.heart {
+			color: red;
+			font-size: 120px;
+			position: relative;
+			left: 20px;
+			float: left;
+		}
+		
+		.remain {
+			align: right;
+			font-size: 70px;
+			float: right;
+			margin-top: 50px;
+			font-weight: bold;
+		}
 	</style>
 </head>
 <body>
 
+	<audio id="explosion" src="../sound/explosion.mp3"></audio>
+	<audio id="dding" src="../sound/dding.mp3"></audio>
+	<audio id="backgroundSound" src="../sound/gameWorld.mp3"></audio>
+	<audio id="victorySound" src="../sound/victory.mp3"></audio>
+	<audio id="loseSound" src="../sound/lose.mp3"></audio>
+
     <script>
 		
+		var arr = new Array(5);
+		var clicked = new Array(5);
+		var iHeart = 3;
+		var iRemain = 13;
+		var score = 1; 
+		var explosion = document.getElementById("explosion");
+		var dding = document.getElementById("dding");
+		var backgroundSound = document.getElementById("backgroundSound");
+		var victorySound = document.getElementById("victorySound");
+		var loseSound = document.getElementById("loseSound");
+		
+		for(var i = 0; i < arr.length; i++) {
+			arr[i] = new Array(5);
+			clicked = new Array(5);
+		}
+		
 		$(document).ready(function () {
+		
+			init();
+			
+		
+			$(".tbMap tr td").click(function() {
+				backgroundPlay();
+				
+				var td = $(this);
+				
+				var rowIndex = $(this).parent().parent().find("tr").index($(this).parent()) / 2 - 1;
+				var colIndex = $(this).parent().find("td").index(this);
+				
+				console.log(rowIndex, colIndex);
+				
+				if(clicked[rowIndex][colIndex] == 0) {
+				
+					clicked[rowIndex][colIndex] = 1;
+					
+					if(arr[rowIndex][colIndex] == 0) {
+					
+						// 폭발효과음
+						if(explosion.paused) {
+							explosion.play();
+						} else {
+							explosion.pause();
+							explosion.currentTime= 0;
+							explosion.play();
+						}
+						
+						iHeart--;
+						if(iHeart <= 0) {
+							updateScore(0);
+							allOpen();
+							setTimeout(() => lose(), 1000);
+							
+						}
+					} else {
+						
+						// 띵 효과음
+						if(dding.paused) {
+							dding.play();
+						} else {
+							dding.pause();
+							dding.currentTime= 0;
+							dding.play();
+						}
+						
+						iRemain--;
+						
+						if(iRemain <= 0) {
+							allOpen();
+							setTimeout(() => victory(), 1000);
+						}
+					}
+					
+					var temp = updateMap(rowIndex, colIndex)
+					if(temp != 0) {
+						updateScore(temp);
+					}
+				} else {
+					return;
+				}	
+				
+			});
 			
 		});
+		
+		function updateMap(row, col) {
+			var imgUrl = "";
+			var iGrade = arr[row][col];
+			
+			if(iGrade == 1) imgUrl = "../image/one.png";
+			else if(iGrade == 2) imgUrl = "../image/two.png";
+			else if(iGrade == 3) imgUrl = "../image/three.png";
+			else imgUrl = "../image/bigBomb.png"
+			
+			console.log((row+1)*2, col);
+			$(".tbMap").find("tr:eq(" + (row+1) * 2 + ")").find("td:eq(" + col + ")").children().attr("src",imgUrl);
+			
+			updateHeart();
+			
+			return iGrade;
+			
+		}
+		
+		
+		function backgroundPlay() {
+		
+			if(backgroundSound.paused) {
+				backgroundSound.play();
+			}
+		}
+		
+		function init() {
+			clicked = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
+			arr = [[0,0,0,0,0],[0,0,0,0,0],[0,0,1,1,1],[1,1,1,2,2],[2,2,3,3,3]];
+			
+			
+			for(var i = 0; i < 100; i++) {
+				var iTmp1 = Math.floor(Math.random() * 25);
+				var iTmp2 = Math.floor(Math.random() * 25);
+				
+				var iRow1 = Math.floor(iTmp1 / 5);
+				var iCol1 = iTmp1 % 5;
+				
+				var iRow2 = Math.floor(iTmp2 / 5);
+				var iCol2 = iTmp2 % 5;
+				
+				var temp = arr[iRow1][iCol1];
+				arr[iRow1][iCol1] = arr[iRow2][iCol2];
+				arr[iRow2][iCol2] = temp;
+				
+			}
+			
+			console.log(arr);
+			
+			for(var i = 0; i < 5; i++) {
+				
+				var iBomb = 0;
+				var iScore = 0;
+				for(var j = 0; j < 5; j++) {
+					if(arr[j][i] == 0) {
+						iBomb++;
+					} else {
+						iScore += arr[j][i];
+					}
+				}
+				$(".tbMap").find("tr:eq(1)").find("td:eq(" + 2*i + ")").text(iBomb);
+				$(".tbMap").find("tr:eq(1)").find("td:eq(" + (2*i + 1) + ")").text(iScore);
+			}
+			
+			for(var i = 0; i < 5; i++) {
+				
+				var iBomb = 0;
+				var iScore = 0;
+				for(var j = 0; j < 5; j++) {
+					if(arr[i][j] == 0) {
+						iBomb++;
+					} else {
+						iScore += arr[i][j];
+					}
+				}
+				$(".tbMap").find("tr:eq(" + 2*(i+1) + ")").find("td:eq(5)").text(iBomb);
+				$(".tbMap").find("tr:eq(" + (2*(i+1) + 1) + ")").find("td:eq(0)").text(iScore);
+			}
+			
+			updateHeart();
+		}
+		
+		function victory() {
+			
+			backgroundSound.pause();
+			victorySound.play();
+			alert("승리하였습니다!\n");
+			
+			alert("화면이 닫힙니다!\n");
+			window.close();
+		}
+		
+		function lose() {
+			
+			backgroundSound.pause();
+			loseSound.play();
+			alert("졌습니다ㅜㅜ\n");
+			
+			alert("화면이 닫힙니다!\n");
+			window.close();
+		}
+		
+		function updateHeart() {
+			var strHeart = "";
+			for(var i = 0; i < iHeart; i++) {
+				strHeart += "♥";
+			}
+			$(".heart").html(strHeart);
+		}
+		
+		function updateScore(i) {
+			score *= i;
+			$(".score").html("Score : " + score);
+			
+			$(".remain").html("남은 갯수 : " + iRemain);
+		}
+		
+		function allOpen() {
+			for(var i = 0; i < 5; i++) {
+				for(var j = 0; j < 5; j++) {
+					if(clicked[i][j] == 0) {
+						updateMap(i, j);
+					}
+				}
+			}
+			
+		}
+		
 	
     </script>
 	
+	<audio id="explosion" src="../sound/explosion.mp3"></audio>
+	
 	<div class="score">
-		Score : 1000
+		Score : 1
 	</div>
 	
 	<div class="divMap">
@@ -73,11 +311,11 @@
 				<td class="smallImg" >1</td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -86,11 +324,11 @@
 				<td class="smallImg"><img src="../image/heart.png"></td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -99,11 +337,11 @@
 				<td class="smallImg"><img src="../image/heart.png"></td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -112,11 +350,11 @@
 				<td class="smallImg"><img src="../image/heart.png"></td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -125,11 +363,11 @@
 				<td class="smallImg"><img src="../image/heart.png"></td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
-				<td class="bigImg" rowspan="2" colspan="2">1</td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -138,6 +376,12 @@
 				<td class="smallImg"><img src="../image/heart.png"></td>
 			</tr>
 		</table>
+		
+		<div class="heart">
+		</div>
+		<div class="remain">
+		남은 갯수 : 13
+		</div>
 	</div>
 </body>
 </html>

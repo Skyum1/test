@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<style>
+
+	</style>
+</head>
+<body>
+
+    <script>
+		
+		var index = 1;
+		$(document).ready(function () {
+			$(".howToImg").click(function () {
+				var imgUrl = "";
+				if (index == 1) imgUrl = "../image/howTo2.png"
+				else if(index == 2) imgUrl = "../image/howTo3.png"
+				else if(index == 3) imgUrl = "../image/howTo4.png"
+				else if(index == 4) location.replace('../index.html');
+				$(".howToImg").attr("src",imgUrl);
+				index++;
+			});
+			
+			
+		});
+	
+    </script>
+	<img class="howToImg" src="../image/howTo1.png">
+	
+	
+</body>
+</html>
