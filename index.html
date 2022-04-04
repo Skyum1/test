@@ -7,19 +7,19 @@
 	.btnPlay {
 		text-align: center;
 		position: relative;
-		top: 250px;
+		top: 150px;
 	}
 	
 	.btnHow {
 		text-align: center;
 		position: relative;
-		top: 400px;
+		top: 250px;
 	}
 	
 	.btnExit {
 		text-align: center;
 		position: relative;
-		top: 600px;
+		top: 350px;
 	}
 	
 	</style>
@@ -28,6 +28,19 @@
 
     <script>
 		
+		$(document).ready(function () {
+			$(".btnPlay").click(function () {
+				location.replace('picture/selectDifficult.html');
+			});
+			
+			$(".btnHow").click(function () {
+				
+			});
+			
+			$(".btnExit").click(function () {
+				window.close();
+			});
+		});
 	
     </script>
 
