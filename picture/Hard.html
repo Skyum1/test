@@ -22,16 +22,16 @@
 		
 		.smallImg {
 			overflow: hidden;
-			width: 75px;
-			height: 75px;
-			font-size: 35px;
+			width: 60px;
+			height: 60px;
+			font-size: 32px;
 			font-weight: bold;
 		}
 
 		.bigImg {
 			overflow: hidden;
-			width: 150px;
-			height: 150px;
+			width: 120px;
+			height: 120px;
 		}
 		
 		.heart {
@@ -64,8 +64,8 @@
 		var arr = new Array(5);
 		var clicked = new Array(5);
 		var iHeart = 3;
-		var iRemain = 13;
-		var score = 1;
+		var iRemain = 18;
+		var score = 1; 
 		var total = 0;
 		var explosion = document.getElementById("explosion");
 		var dding = document.getElementById("dding");
@@ -74,8 +74,8 @@
 		var loseSound = document.getElementById("loseSound");
 		
 		for(var i = 0; i < arr.length; i++) {
-			arr[i] = new Array(5);
-			clicked = new Array(5);
+			arr[i] = new Array(6);
+			clicked = new Array(6);
 		}
 		
 		$(document).ready(function () {
@@ -93,8 +93,8 @@
 				
 				//console.log(rowIndex, colIndex, (rowIndex +1) * 2);
 				
-				if(rowIndex < 0 || rowIndex > 4) return;
-				if(colIndex < 0 || colIndex > 4) return;
+				if(rowIndex < 0 || rowIndex > 5) return;
+				if(colIndex < 0 || colIndex > 5) return;
 				if(((rowIndex +1) * 2) % 2 == 1) return;
 				
 				if(clicked[rowIndex][colIndex] == 0) {
@@ -156,10 +156,11 @@
 			var imgUrl = "";
 			var iGrade = arr[row][col];
 			
-			if(iGrade == 1) imgUrl = "../image/one.png";
-			else if(iGrade == 2) imgUrl = "../image/two.png";
-			else if(iGrade == 3) imgUrl = "../image/three.png";
-			else imgUrl = "../image/bigBomb.png"
+			if(iGrade == 1) imgUrl = "../image/oneHard.png";
+			else if(iGrade == 2) imgUrl = "../image/twoHard.png";
+			else if(iGrade == 3) imgUrl = "../image/threeHard.png";
+			else if(iGrade == 4) imgUrl = "../image/fourHard.png";
+			else imgUrl = "../image/bigBombHard.png"
 			
 			//console.log((row+1)*2, col);
 			$(".tbMap").find("tr:eq(" + (row+1) * 2 + ")").find("td:eq(" + col + ")").children().attr("src",imgUrl);
@@ -179,8 +180,9 @@
 		}
 		
 		function init() {
-			clicked = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-			arr = [[0,0,0,0,0],[0,0,0,0,0],[0,0,1,1,1],[1,1,1,2,2],[2,2,3,3,3]];
+			clicked = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];
+			arr = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,1,1,1,1],[1,1,1,2,2,2],[1,1,1,2,2,2],[2,3,3,3,3,3]];
+			
 			
 			if(getParameters("totalScore")) {
 				total = parseInt(getParameters("totalScore"));
@@ -188,16 +190,26 @@
 				total = 0;
 			}
 			
+			if(getParameters("difficult") == 4)
+			{
+				arr = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[1,1,1,1,1,2],[2,2,2,3,3,3],[3,3,3,3,4,4]];
+				iHeart = 2;
+			} else {
+				arr = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,1,1,1],[1,1,1,2,2,2],[1,1,1,2,2,2],[2,3,3,3,3,3]];
+				iHeart = 3;
+				iRemain = 21;
+				$(".remain").text(iRemain);
+			}
 			
-			for(var i = 0; i < 100; i++) {
-				var iTmp1 = Math.floor(Math.random() * 25);
-				var iTmp2 = Math.floor(Math.random() * 25);
+			for(var i = 0; i < 200; i++) {
+				var iTmp1 = Math.floor(Math.random() * 36);
+				var iTmp2 = Math.floor(Math.random() * 36);
 				
-				var iRow1 = Math.floor(iTmp1 / 5);
-				var iCol1 = iTmp1 % 5;
+				var iRow1 = Math.floor(iTmp1 / 6);
+				var iCol1 = iTmp1 % 6;
 				
-				var iRow2 = Math.floor(iTmp2 / 5);
-				var iCol2 = iTmp2 % 5;
+				var iRow2 = Math.floor(iTmp2 / 6);
+				var iCol2 = iTmp2 % 6;
 				
 				var temp = arr[iRow1][iCol1];
 				arr[iRow1][iCol1] = arr[iRow2][iCol2];
@@ -207,11 +219,11 @@
 			
 			//console.log(arr);
 			
-			for(var i = 0; i < 5; i++) {
+			for(var i = 0; i < 6; i++) {
 				
 				var iBomb = 0;
 				var iScore = 0;
-				for(var j = 0; j < 5; j++) {
+				for(var j = 0; j < 6; j++) {
 					if(arr[j][i] == 0) {
 						iBomb++;
 					} else {
@@ -222,18 +234,18 @@
 				$(".tbMap").find("tr:eq(1)").find("td:eq(" + (2*i + 1) + ")").text(iScore);
 			}
 			
-			for(var i = 0; i < 5; i++) {
+			for(var i = 0; i < 6; i++) {
 				
 				var iBomb = 0;
 				var iScore = 0;
-				for(var j = 0; j < 5; j++) {
+				for(var j = 0; j < 6; j++) {
 					if(arr[i][j] == 0) {
 						iBomb++;
 					} else {
 						iScore += arr[i][j];
 					}
 				}
-				$(".tbMap").find("tr:eq(" + 2*(i+1) + ")").find("td:eq(5)").text(iBomb);
+				$(".tbMap").find("tr:eq(" + 2*(i+1) + ")").find("td:eq(6)").text(iBomb);
 				$(".tbMap").find("tr:eq(" + (2*(i+1) + 1) + ")").find("td:eq(0)").text(iScore);
 			}
 			
@@ -286,8 +298,8 @@
 		}
 		
 		function allOpen() {
-			for(var i = 0; i < 5; i++) {
-				for(var j = 0; j < 5; j++) {
+			for(var i = 0; i < 6; i++) {
+				for(var j = 0; j < 6; j++) {
 					if(clicked[i][j] == 0) {
 						updateMap(i, j);
 					}
@@ -316,7 +328,7 @@
 				if(data == "success") {
 					alert("점수 등록에 성공하였습니다!");
 				} else {
-					alert("실패!");
+					alert("점수 등록에 실패하였습니다.\n 관리자에게 문의하십시오");
 				}
 
 			});
@@ -334,7 +346,6 @@
 			}
 			return true;
 		}
-		
 		
 		var getParameters = function (paramName) {
 			// 리턴값을 위한 변수 선언
@@ -355,6 +366,7 @@
 				}
 			}
 		};
+		
 	
     </script>
 	
@@ -367,16 +379,18 @@
 	<div class="divMap">
 		<table class="tbMap" border="1">
 			<tr>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
 				<td rowspan="2" colspan="2"></td>
 
 			</tr>
@@ -391,78 +405,99 @@
 				<td class="smallImg" >1</td>
 				<td class="smallImg" >1</td>
 				<td class="smallImg" >1</td>
+				<td class="smallImg" >1</td>
+				<td class="smallImg" >1</td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
 				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-			</tr>
-			<tr>
-				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-			</tr>
-			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
 			</tr>
 			<tr>
 				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
 				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-			</tr>
-			<tr>
-				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-			</tr>
-			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
 			</tr>
 			<tr>
 				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
 				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
 			</tr>
 			<tr>
 				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+			</tr>
+			<tr>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="smallImg">1</td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+			</tr>
+			<tr>
+				<td class="smallImg">1</td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+			</tr>
+			<tr>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="smallImg">1</td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+			</tr>
+			<tr>
+				<td class="smallImg">1</td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
+			</tr>
+			<tr>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/backHard.png"></td>
+				<td class="smallImg">1</td>
+				<td class="smallImg"><img src="../image/smallBombHard.png"></td>
+			</tr>
+			<tr>
+				<td class="smallImg">1</td>
+				<td class="smallImg"><img src="../image/heartHard.png"></td>
 			</tr>
 		</table>
 		
 		<div class="heart">
 		</div>
 		<div class="remain">
-		남은 갯수 : 13
+		남은 갯수 : 18
 		</div>
 	</div>
 </body>

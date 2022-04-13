@@ -7,10 +7,16 @@
 	.btnPlay {
 		text-align: center;
 		position: relative;
-		top: 150px;
+		top: 50px;
 	}
 	
 	.btnHow {
+		text-align: center;
+		position: relative;
+		top: 150px;
+	}
+	
+	.btnRank {
 		text-align: center;
 		position: relative;
 		top: 250px;
@@ -37,6 +43,10 @@
 				location.replace('picture/howToPlay.html');
 			});
 			
+			$(".btnRank").click(function () {
+				location.replace('picture/Rank.html');
+			});
+			
 			$(".btnExit").click(function () {
 				window.close();
 			});
@@ -50,6 +60,10 @@
 	
 	<div class="btnHow">
 		<img src="image/btnHowToPlay.png" alt="Play">
+	</div>
+	
+	<div class="btnRank">
+		<img src="image/Rank.png" alt="Rank">
 	</div>
 	
 	<div class="btnExit">

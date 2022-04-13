@@ -3,31 +3,70 @@
 <head>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<style>
-
+	
+		.howToImg {
+			width: 720px;
+			height: 1000px;
+		}
 	</style>
 </head>
 <body>
 
+	<audio id="dding" src="../sound/dding.mp3"></audio>
     <script>
 		
 		var index = 1;
 		$(document).ready(function () {
+			var imgUrl = "";
+			
 			$(".howToImg").click(function () {
-				var imgUrl = "";
-				if (index == 1) imgUrl = "../image/howTo2.png"
-				else if(index == 2) imgUrl = "../image/howTo3.png"
-				else if(index == 3) imgUrl = "../image/howTo4.png"
-				else if(index == 4) location.replace('../index.html');
-				$(".howToImg").attr("src",imgUrl);
-				index++;
+				
 			});
 			
+			$(".prev").click(function () {
+				index--;
+				if(index == 1) {
+					$(".prev").css("visibility","hidden");
+					imgUrl = "../image/howTo1.png"
+				} else if(index == 2){ 
+					imgUrl = "../image/howTo2.png"
+				} else if (index == 3) {
+					imgUrl = "../image/howTo3.png"
+					$(".next").css("visibility","visible");
+					$(".goMain").css("visibility","hidden");
+				}
+				
+				$(".howToImg").attr("src",imgUrl);
+			});
 			
+			$(".next").click(function () {
+				index++;
+				if(index == 2) {
+					$(".prev").css("visibility","visible");
+					imgUrl = "../image/howTo2.png"
+				} else if(index == 3){ 
+					imgUrl = "../image/howTo3.png"
+				} else if (index == 4) {
+					$(".next").css("visibility","hidden");
+					$(".goMain").css("visibility","visible");
+					imgUrl = "../image/howTo4.png"
+				}
+				$(".howToImg").attr("src",imgUrl);
+			});
+			
+			$(".goMain").click(function () {
+				
+				location.replace('../index.html');
+			});
 		});
 	
     </script>
+	
 	<img class="howToImg" src="../image/howTo1.png">
 	
+	<img class="prev" src="../image/prev.png" style="visibility:hidden;">
+	<img class="next" src="../image/next.png">
+	<img class="goMain" src="../image/goMain.png" style="visibility:hidden;">
 	
 </body>
 </html>

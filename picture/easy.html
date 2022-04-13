@@ -22,16 +22,16 @@
 		
 		.smallImg {
 			overflow: hidden;
-			width: 75px;
-			height: 75px;
-			font-size: 35px;
+			width: 90px;
+			height: 90px;
+			font-size: 40px;
 			font-weight: bold;
 		}
 
 		.bigImg {
 			overflow: hidden;
-			width: 150px;
-			height: 150px;
+			width: 180px;
+			height: 180px;
 		}
 		
 		.heart {
@@ -61,11 +61,11 @@
 
     <script>
 		
-		var arr = new Array(5);
-		var clicked = new Array(5);
+		var arr = new Array(4);
+		var clicked = new Array(4);
 		var iHeart = 3;
-		var iRemain = 13;
-		var score = 1;
+		var iRemain = 9;
+		var score = 1; 
 		var total = 0;
 		var explosion = document.getElementById("explosion");
 		var dding = document.getElementById("dding");
@@ -74,8 +74,8 @@
 		var loseSound = document.getElementById("loseSound");
 		
 		for(var i = 0; i < arr.length; i++) {
-			arr[i] = new Array(5);
-			clicked = new Array(5);
+			arr[i] = new Array(4);
+			clicked = new Array(4);
 		}
 		
 		$(document).ready(function () {
@@ -93,8 +93,8 @@
 				
 				//console.log(rowIndex, colIndex, (rowIndex +1) * 2);
 				
-				if(rowIndex < 0 || rowIndex > 4) return;
-				if(colIndex < 0 || colIndex > 4) return;
+				if(rowIndex < 0 || rowIndex > 3) return;
+				if(colIndex < 0 || colIndex > 3) return;
 				if(((rowIndex +1) * 2) % 2 == 1) return;
 				
 				if(clicked[rowIndex][colIndex] == 0) {
@@ -133,8 +133,9 @@
 						iRemain--;
 						
 						if(iRemain <= 0) {
+							
 							allOpen();
-							score = parseInt(score) * 3;
+							score = parseInt(score) * 2;
 							$(".score").html("Score : " + score);
 							setTimeout(() => victory(), 1000);
 						}
@@ -179,8 +180,7 @@
 		}
 		
 		function init() {
-			clicked = [[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]];
-			arr = [[0,0,0,0,0],[0,0,0,0,0],[0,0,1,1,1],[1,1,1,2,2],[2,2,3,3,3]];
+			clicked = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
 			
 			if(getParameters("totalScore")) {
 				total = parseInt(getParameters("totalScore"));
@@ -188,16 +188,26 @@
 				total = 0;
 			}
 			
+			if(getParameters("difficult") == 1)
+			{
+				arr = [[0,0,0,0],[0,0,0,1],[1,1,1,2],[2,2,2,3]];
+				iHeart = 2;
+			} else {
+				arr = [[0,0,0,0],[0,0,0,1],[1,1,1,1],[2,2,2,2]];
+				iHeart = 3;
+			}
+			
+			updateScore(1);
 			
 			for(var i = 0; i < 100; i++) {
-				var iTmp1 = Math.floor(Math.random() * 25);
-				var iTmp2 = Math.floor(Math.random() * 25);
+				var iTmp1 = Math.floor(Math.random() * 16);
+				var iTmp2 = Math.floor(Math.random() * 16);
 				
-				var iRow1 = Math.floor(iTmp1 / 5);
-				var iCol1 = iTmp1 % 5;
+				var iRow1 = Math.floor(iTmp1 / 4);
+				var iCol1 = iTmp1 % 4;
 				
-				var iRow2 = Math.floor(iTmp2 / 5);
-				var iCol2 = iTmp2 % 5;
+				var iRow2 = Math.floor(iTmp2 / 4);
+				var iCol2 = iTmp2 % 4;
 				
 				var temp = arr[iRow1][iCol1];
 				arr[iRow1][iCol1] = arr[iRow2][iCol2];
@@ -207,11 +217,11 @@
 			
 			//console.log(arr);
 			
-			for(var i = 0; i < 5; i++) {
+			for(var i = 0; i < 4; i++) {
 				
 				var iBomb = 0;
 				var iScore = 0;
-				for(var j = 0; j < 5; j++) {
+				for(var j = 0; j < 4; j++) {
 					if(arr[j][i] == 0) {
 						iBomb++;
 					} else {
@@ -222,18 +232,18 @@
 				$(".tbMap").find("tr:eq(1)").find("td:eq(" + (2*i + 1) + ")").text(iScore);
 			}
 			
-			for(var i = 0; i < 5; i++) {
+			for(var i = 0; i < 4; i++) {
 				
 				var iBomb = 0;
 				var iScore = 0;
-				for(var j = 0; j < 5; j++) {
+				for(var j = 0; j < 4; j++) {
 					if(arr[i][j] == 0) {
 						iBomb++;
 					} else {
 						iScore += arr[i][j];
 					}
 				}
-				$(".tbMap").find("tr:eq(" + 2*(i+1) + ")").find("td:eq(5)").text(iBomb);
+				$(".tbMap").find("tr:eq(" + 2*(i+1) + ")").find("td:eq(4)").text(iBomb);
 				$(".tbMap").find("tr:eq(" + (2*(i+1) + 1) + ")").find("td:eq(0)").text(iScore);
 			}
 			
@@ -286,8 +296,8 @@
 		}
 		
 		function allOpen() {
-			for(var i = 0; i < 5; i++) {
-				for(var j = 0; j < 5; j++) {
+			for(var i = 0; i < 4; i++) {
+				for(var j = 0; j < 4; j++) {
 					if(clicked[i][j] == 0) {
 						updateMap(i, j);
 					}
@@ -335,7 +345,6 @@
 			return true;
 		}
 		
-		
 		var getParameters = function (paramName) {
 			// 리턴값을 위한 변수 선언
 			var returnValue;
@@ -375,8 +384,6 @@
 				<td class="smallImg"><img src="../image/heart.png"></td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 				<td class="smallImg"><img src="../image/heart.png"></td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
 				<td rowspan="2" colspan="2"></td>
 
 			</tr>
@@ -389,11 +396,8 @@
 				<td class="smallImg" >1</td>
 				<td class="smallImg" >1</td>
 				<td class="smallImg" >1</td>
-				<td class="smallImg" >1</td>
-				<td class="smallImg" >1</td>
 			</tr>
 			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
@@ -410,7 +414,7 @@
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -423,7 +427,7 @@
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -436,20 +440,7 @@
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
 				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/smallBomb.png"></td>
-			</tr>
-			<tr>
-				<td class="smallImg">1</td>
-				<td class="smallImg"><img src="../image/heart.png"></td>
-			</tr>
-			<tr>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
-				<td class="bigImg" rowspan="2" colspan="2"><img src="../image/back.png"></td>
+				
 				<td class="smallImg">1</td>
 				<td class="smallImg"><img src="../image/smallBomb.png"></td>
 			</tr>
@@ -462,7 +453,7 @@
 		<div class="heart">
 		</div>
 		<div class="remain">
-		남은 갯수 : 13
+		남은 갯수 : 100
 		</div>
 	</div>
 </body>

@@ -3,65 +3,120 @@
 <head>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<style>
-	.btnVeryEasy {
-		text-align: center;
-		position: relative;
-		top: 100px;
-	}
-	
-	.btnEasy {
-		text-align: center;
-		position: relative;
-		top: 100px;
-	}
-	
-	.btnMedium {
-		text-align: center;
-		position: relative;
-		top: 100px;
-	}
-	
-	.btnHard {
-		text-align: center;
-		position: relative;
-		top: 100px;
-	}
-	
-	.btnVeryHard {
-		text-align: center;
-		position: relative;
-		top: 100px;
-	}
+		.totalScore {
+			font-size: 70px;
+			text-align: center;
+			margin-bottom: 10px;
+			font-weight: bold;
+		}
+		
+		.btnVeryEasy {
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
+		
+		.btnEasy {
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
+		
+		.btnMedium {
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
+		
+		.btnHard {
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
+		
+		.btnVeryHard {
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
+		
+		.goMain {
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
 	</style>
 </head>
 <body>
 
     <script>
 		
+		var total = 0;
 		$(document).ready(function () {
+			total = getParameters("totalScore");
+			if(total == null) {
+				total = 0;
+				$(".totalScore").text("총 점수 : " + 0);
+			} else {
+				$(".totalScore").text("총 점수 : " + total);
+			}
+		
 			$(".btnVeryEasy").click(function () {
-				location.replace('picture/selectDifficult.html');
+				location.replace('easy.html?difficult=0&totalScore=' + total);
 			});
 			
 			$(".btnEasy").click(function () {
-				location.replace('picture/selectDifficult.html');
+				location.replace('easy.html?difficult=1&totalScore=' + total);
 			});
 			
 			$(".btnMedium").click(function () {
-				location.replace('Medium.html');
+				location.replace('Medium.html?totalScore=' + total);
 			});
 			
 			$(".btnHard").click(function () {
-				location.replace('picture/selectDifficult.html');
+				location.replace('Hard.html?difficult=3&totalScore=' + total);
 			});
 			
 			$(".btnVeryHard").click(function () {
-				location.replace('picture/selectDifficult.html');
+				location.replace('Hard.html?difficult=4&totalScore=' + total);
+			});
+			
+			$(".goMain").click(function () {
+				if(total != 0) {
+					if(window.confirm("메인으로 돌아갈 시 점수가 초기화 됩니다.\n 그래도 돌아가시겠습니까?")) {
+						location.replace('../index.html');
+					}
+				} else {
+					location.replace('../index.html');
+				}
+				
 			});
 		});
 	
+		var getParameters = function (paramName) {
+			// 리턴값을 위한 변수 선언
+			var returnValue;
+
+			// 현재 URL 가져오기
+			var url = location.href;
+
+			// get 파라미터 값을 가져올 수 있는 ? 를 기점으로 slice 한 후 split 으로 나눔
+			var parameters = (url.slice(url.indexOf('?') + 1, url.length)).split('&');
+
+			// 나누어진 값의 비교를 통해 paramName 으로 요청된 데이터의 값만 return
+			for (var i = 0; i < parameters.length; i++) {
+				var varName = parameters[i].split('=')[0];
+				if (varName.toUpperCase() == paramName.toUpperCase()) {
+					returnValue = parameters[i].split('=')[1];
+					return decodeURIComponent(returnValue);
+				}
+			}
+		};
     </script>
 
+	<div class="totalScore">
+		총 점수 : 1
+	</div>
 	
 	<div class="btnVeryEasy">
 		<img src="../image/btnVeryEasy.png" alt="VeryEasy">
@@ -81,6 +136,10 @@
 	
 	<div class="btnVeryHard">
 		<img src="../image/btnVeryHard.png" alt="VeryHard">
+	</div>
+	
+	<div class="goMain">
+		<img src="../image/goMain.png" alt="goMain">
 	</div>
 	
 </body>
